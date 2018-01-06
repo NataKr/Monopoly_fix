@@ -1,6 +1,6 @@
 var Monopoly = {};
 Monopoly.allowRoll = true;
-Monopoly.moneyAtStart = 50; //Natalya (changed to reasonalb ammount 300 instead of 1000)
+Monopoly.moneyAtStart = 300; //Natalya: changed to a more reasonable ammount
 Monopoly.doubleCounter = 0;
 
 Monopoly.init = function(){
@@ -44,29 +44,18 @@ Monopoly.updatePlayersMoney = function(player,amount){
     var playersMoney = parseInt(player.attr("data-money"));
     playersMoney -= amount;
     if (playersMoney < 0 ){
-        alert("you are broke!"); // Natalya (player broke)  to be removed
-        console.log("the player");
-        console.log(player);
-        console.log("lost his money");
-
-        //var popup = Monopoly.getPopup("broke");
-        //popup.find("button").unbind("click").bind("click",function(){
-            console.log(player);
+        alert("you are broke!"); // Natalya: added
+            // Natalya: added the case for bankrupt
             var playerId=player.attr("id");
-            console.log(playerId);
             player.addClass("player-broke");
             $(".board").find(".cell."+playerId).removeClass(playerId).addClass("available");
-            console.log(player);
-            //Monopoly.setNextPlayerTurn();
-        //});
+
         Monopoly.showPopup("broke");
     }
     player.attr("data-money",playersMoney);
     player.attr("title",player.attr("id") + ": $" + playersMoney);
     Monopoly.playSound("chaching");
-    console.log("the player ");
-    console.log(player);
-    console.log(" the money "+playersMoney);
+
 };
 
 
@@ -78,10 +67,10 @@ Monopoly.rollDice = function(){
     $(".dice#dice2").attr("data-num",result2).find(".dice-dot.num" + result2).css("opacity",1);
     if (result1 == result2){
         Monopoly.doubleCounter++;
-    } else {///Natalya (added condition for getting double)
-        Monopoly.doubleCounter=0; //Natalya (added condition for getting double)
-    }///Natalya (added condition for getting double)
-    console.log(Monopoly.doubleCounter);
+    } else {///Natalya: (added condition for getting double)
+        Monopoly.doubleCounter=0;
+    }
+
 
     var currentPlayer = Monopoly.getCurrentPlayer();
     Monopoly.handleAction(currentPlayer,"move",result1 + result2);
@@ -107,7 +96,7 @@ Monopoly.movePlayer = function(player,steps){
 
 Monopoly.handleTurn = function(){
     var player = Monopoly.getCurrentPlayer();
-    console.log(player);
+
     var playerCell = Monopoly.getPlayersCell(player);
     if (playerCell.is(".available.property")){
         Monopoly.handleBuyProperty(player,playerCell);
@@ -188,7 +177,6 @@ Monopoly.handlePayRent = function(player,propertyCell){
     popup.find("#amount-placeholder").text(currentRent);
     popup.find("button").unbind("click").bind("click",function(){
         var properyOwner = $(".player#"+ properyOwnerId);
-        console.log(properyOwnerId)
         Monopoly.updatePlayersMoney(player,currentRent);
         Monopoly.updatePlayersMoney(properyOwner,-1*currentRent);
         Monopoly.closeAndNextTurn();
@@ -219,15 +207,15 @@ Monopoly.handleChanceCard = function(player){
         var currentBtn = $(this);
         var action = currentBtn.attr("data-action");
         var amount = currentBtn.attr("data-amount");
-        console.log("testing the action and amount " + action + " " + amount)
+
         Monopoly.handleAction(player,action,amount);
     });
     Monopoly.showPopup("chance");
 };
 
 Monopoly.handleCommunityCard = function(player){
-    //TODO: implement this method
-    var popup = Monopoly.getPopup("community"); //Natalya(implemented the community card) discuss if we really need to pay the amount
+
+    var popup = Monopoly.getPopup("community"); //Natalya(implemented the community card)
     popup.find(".popup-content").addClass("loading-state");
     $.get("https://itcmonopoly.appspot.com/get_random_community_card", function(chanceJson){
         popup.find(".popup-content #text-placeholder").text(chanceJson["content"]);
@@ -239,17 +227,13 @@ Monopoly.handleCommunityCard = function(player){
         var currentBtn = $(this);
         var action = currentBtn.attr("data-action");
         var amount = currentBtn.attr("data-amount");
-        console.log("testing the action and amount " + action + " " + amount);
-        /*if (action=="jail"){  //Natalya (added if statement relate to the case of the jail card)
-          console.log("I got the jail community card");
+
+        /*if (action=="jail"){  //Natalya (added if statement relate to the case of the jail card - I am not sure whether getting in jail also triggers money loss)
           Monopoly.updatePlayersMoney(player, amount);
         }*/
         Monopoly.handleAction(player,action,amount);
     });
     Monopoly.showPopup("community");
-
-    /*alert("not implemented yet!") //Natalya (commented out for now the perious code)
-    Monopoly.setNextPlayerTurn();*/
 };
 
 
@@ -320,10 +304,10 @@ Monopoly.handleBuy = function(player,propertyCell,propertyCost){
 
 
 Monopoly.handleAction = function(player,action,amount){
-    console.log(action)
+
     switch(action){
         case "move":
-       	    console.log(amount)
+
             Monopoly.movePlayer(player,amount);
 
              break;
@@ -359,7 +343,7 @@ Monopoly.getNextCell = function(cell){
     var currentCellId = parseInt(cell.attr("id").replace("cell",""));
     var nextCellId = currentCellId + 1
     if (nextCellId > 40){
-        console.log("YAY")
+
         Monopoly.handlePassedGo();
         nextCellId = 1;
     }
@@ -380,8 +364,7 @@ Monopoly.isValidInput = function(validate,value){
             if(value > 1 && value <= 4){
                 isValid = true;
             }
-            //TODO: remove when done
-            console.log("the val " + value)
+
             //isValid = true; //Natalya(fixed validation)
             break;
     }
@@ -421,7 +404,7 @@ Monopoly.showPopup = function(popupId){
     $(".popup-lightbox .popup-page").hide();
     $(".popup-lightbox .popup-page#" + popupId).show();
     $(".popup-lightbox").fadeIn();
-    console.log('popup '+popupId+" is shown");
+
 };
 
 Monopoly.init();
